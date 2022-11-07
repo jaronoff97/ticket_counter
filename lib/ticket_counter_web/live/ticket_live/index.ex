@@ -6,8 +6,8 @@ defmodule TicketCounterWeb.TicketLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, 
-      assign(socket, :ticket_collection, list_ticket())}
+    if connected?(socket), do: Tickets.subscribe()
+    {:ok, assign(socket, :ticket_collection, list_ticket())}
   end
 
   @impl true
@@ -39,6 +39,25 @@ defmodule TicketCounterWeb.TicketLive.Index do
     {:ok, _} = Tickets.delete_ticket(ticket)
 
     {:noreply, assign(socket, :ticket_collection, list_ticket())}
+  end
+
+  @impl true
+  def handle_info({:ticket_created, ticket}, socket) do
+    IO.puts "new ticket"
+    IO.inspect ticket
+    new_ticket = Tickets.get_ticket!(ticket.id)
+    {:noreply, update(socket, :ticket_collection, fn ticket_collection -> ticket_collection ++ [new_ticket] end)}
+  end
+
+  @impl true
+  def handle_info({:ticket_deleted, ticket}, socket) do
+    
+    IO.puts "deleted ticket"
+    {:noreply, update(socket, :ticket_collection, fn collection -> Enum.filter(collection, fn
+        %Ticket{id: i} when i == ticket.id -> false
+        _ -> true
+      end)
+    end )}
   end
 
   defp list_ticket do

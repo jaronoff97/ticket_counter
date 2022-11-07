@@ -5,16 +5,12 @@ defmodule TicketCounterWeb.TicketLive.Resolve do
 
   @impl true
   def mount(_params, _session, socket) do
-
+    if connected?(socket), do: Tickets.subscribe()
     {:ok, socket}
   end
 
   @impl true
   def handle_params(params, session, socket) do
-    IO.puts "----------------"
-    IO.puts inspect(params)
-    IO.puts inspect(session)
-    IO.puts "----------------"
     {:noreply, socket
       |> assign(:ticket, Tickets.get_latest_ticket())}
   end
@@ -25,6 +21,18 @@ defmodule TicketCounterWeb.TicketLive.Resolve do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:ticket, Tickets.get_ticket!(id))}
+  end
+
+  @impl true
+  def handle_info({:ticket_created, _ticket}, socket) do
+    {:noreply, socket
+      |> assign(:ticket, Tickets.get_latest_ticket())}
+  end
+
+  @impl true
+  def handle_info({:ticket_deleted, _ticket}, socket) do
+    {:noreply, socket
+      |> assign(:ticket, Tickets.get_latest_ticket())}
   end
 
   defp page_title(:show), do: "Show Ticket"

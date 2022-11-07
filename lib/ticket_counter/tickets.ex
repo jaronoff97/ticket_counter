@@ -57,10 +57,10 @@ defmodule TicketCounter.Tickets do
   """
   def create_ticket(attrs \\ %{}) do
     %Ticket{}
-    
     |> Ticket.changeset(attrs)
-    
     |> Repo.insert()
+    |> broadcast(:ticket_created)
+    |> TicketCounter.TidByt.update_tidbyt
   end
 
   @doc """
@@ -81,6 +81,17 @@ defmodule TicketCounter.Tickets do
     |> Repo.update()
   end
 
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(TicketCounter.PubSub, "tickets")
+  end
+
+  defp broadcast({:error, _reason} = error, _event), do: error
+  defp broadcast({:ok, ticket}, event) do
+    Phoenix.PubSub.broadcast(TicketCounter.PubSub, "tickets", {event, ticket})
+    {:ok, ticket}
+  end
+
   @doc """
   Deletes a ticket.
 
@@ -95,6 +106,7 @@ defmodule TicketCounter.Tickets do
   """
   def delete_ticket(%Ticket{} = ticket) do
     Repo.delete(ticket)
+    |> broadcast(:ticket_deleted)
   end
 
   @doc """
