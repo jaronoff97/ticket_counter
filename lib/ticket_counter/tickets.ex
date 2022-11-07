@@ -107,6 +107,7 @@ defmodule TicketCounter.Tickets do
   def delete_ticket(%Ticket{} = ticket) do
     Repo.delete(ticket)
     |> broadcast(:ticket_deleted)
+    |> TicketCounter.TidByt.update_tidbyt
   end
 
   @doc """

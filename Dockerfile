@@ -52,8 +52,6 @@ COPY lib lib
 
 COPY assets assets
 
-COPY counter.star counter.star
-
 # compile assets
 RUN mix assets.deploy
 
@@ -80,19 +78,23 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+WORKDIR "/app"
+RUN chown nobody /app
+
 # install pixlet
 RUN curl -LO https://github.com/tidbyt/pixlet/releases/download/v0.22.4/pixlet_0.22.4_linux_amd64.tar.gz
 RUN tar -xvf pixlet_0.22.4_linux_amd64.tar.gz
 RUN chmod +x ./pixlet
-
-WORKDIR "/app"
-RUN chown nobody /app
 
 # set runner ENV
 ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/ticket_counter ./
+
+RUN mv pixlet /app/bin/pixlet
+
+COPY counter.star /app/bin/counter.star
 
 USER nobody
 

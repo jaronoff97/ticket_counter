@@ -9,9 +9,12 @@ def main():
     if rep.status_code != 200:
         fail("Ticket counter request failed with status %d", rep.status_code)
 
-    response = rep.json()["data"]
-    name = response["name"]
-    number = response["number"]
+    response = rep.json()
+    name = "no one"
+    number = 0
+    if response.get("data") != None:
+        name = response["data"]["name"]
+        number = response["data"]["number"]
     print(str(number))
     print("{0} is next".format(name))
     return render.Root(
