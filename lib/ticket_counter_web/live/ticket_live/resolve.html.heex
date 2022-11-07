@@ -1,0 +1,26 @@
+<%= if @ticket do %>
+<h1>Current ticket</h1>
+
+
+<ul>
+
+  <li>
+    <strong>Number:</strong>
+    <%= @ticket.number %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @ticket.name %>
+  </li>
+
+</ul>
+
+<button phx-click="resolve_ticket">Resolve</button>
+<%= else %>
+
+<h1>No tickets right now</h1>
+
+<%= end %>
+
+

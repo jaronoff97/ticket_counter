@@ -1,0 +1,36 @@
+<h1>Add your name to the list</h1>
+
+  <.live_component
+    module={TicketCounterWeb.TicketLive.FormComponent}
+    id={:new}
+    title={@page_title}
+    action={:new}
+    changeset={TicketCounter.Tickets.change_ticket(%TicketCounter.Tickets.Ticket{}, %{})}
+    ticket={@ticket}
+    return_to={Routes.ticket_index_path(@socket, :index)}
+  />
+
+<table>
+  <thead>
+    <tr>
+      <th>Number</th>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+
+  <%= if @ticket != nil and @ticket.number != nil do %>
+  <h3> <%= @ticket.number %> is your number</h3>  
+  <% end %>
+  
+  <tbody id="ticket">
+    <%= for ticket <- @ticket_collection do %>
+      <tr id={"ticket-#{ticket.id}"}>
+        <td><%= ticket.number %></td>
+        <td><%= ticket.name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
