@@ -33,3 +33,7 @@ npm-debug.log
 /assets/node_modules/
 
 pixlet
+
+.elixir_ls
+
+.DS_Store
