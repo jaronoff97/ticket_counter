@@ -1,6 +1,12 @@
 defmodule TicketCounter.TidByt do
 
   @tidbyt_url "https://api.tidbyt.com/v0/devices/"
+  @tidbyt_height 32
+  @tidbyt_width 64
+
+  def total_dimensions do
+    @tidbyt_width * @tidbyt_height
+  end
 
   def update_tidbyt({:error, _reason} = error, _event), do: error
 

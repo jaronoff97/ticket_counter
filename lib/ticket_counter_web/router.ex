@@ -21,8 +21,19 @@ defmodule TicketCounterWeb.Router do
 
     live "/ticket", TicketLive.Index, :index
     live "/ticket/new", TicketLive.Index, :new
-
     live "/ticket/resolve", TicketLive.Resolve, :index
+
+
+  end
+
+  
+  live_session :default, on_mount: TicketCounterWeb.RunnerLive.InitAssigns do
+    scope "/", TicketCounterWeb do
+      pipe_through :browser
+      live "/runner", RunnerLive.Index, :index
+      live "/runner/new", RunnerLive.Index, :new
+      live "/runner/:id/edit", RunnerLive.Index, :edit
+    end
   end
 
   # Other scopes may use custom stacks.

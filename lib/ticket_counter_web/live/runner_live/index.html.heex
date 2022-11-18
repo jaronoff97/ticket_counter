@@ -1,0 +1,46 @@
+<h1>Pixels left: <%= @pixels_left %></h1>
+
+<%= if @current_runner != nil && @current_runner.name != nil do %>
+<h3><%= @current_runner.name %> is signed in</h3>
+<%= else %>
+    <.live_component
+      module={TicketCounterWeb.RunnerLive.FormComponent}
+      id={:new}
+      action={:new}
+      runner={@current_runner}
+      return_to={Routes.runner_index_path(@socket, :index)}
+    />
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="runner">
+    <%= for runner <- @runner_collection do %>
+      <tr id={"runner-#{runner.id}"} style={"background-color:#{runner.color}"}>
+        <td><%= runner.name %></td>
+
+        <%= cond do %>
+          <%= @current_runner != nil && @current_runner.id == runner.id -> %>
+            <td>
+              <span><%= link "Sign out", to: "#", phx_click: "delete", phx_value_id: runner.id, data: [confirm: "Are you sure?"] %></span>
+            </td>
+          <%= @current_runner.id == nil -> %>
+            <td>
+              <span><%= link "Sign in", to: "#", phx_click: "sign_in", phx_value_id: runner.id, data: [confirm: "Are you sure?"] %></span>
+            </td>
+          <%= true -> %>
+            <td></td>
+        <%= end %>
+        
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= link "Add a pixel", to: "#", phx_click: "add_pixel" %></span>
