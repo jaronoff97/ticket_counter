@@ -7,14 +7,23 @@ defmodule TicketCounterWeb.RunnerLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket), do: Pixels.subscribe()
+    {counter, total} = Pixels.pixels_left()
     {:ok, socket
       |> assign(:runner_collection, list_runner())
-      |> assign(:pixels_left, Pixels.pixels_left())}
+      |> assign(:pixel_counter, counter)
+      |> assign(:pixel_total, total)}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :reset, _params) do
+    {:ok, counter} = Pixels.reset_pixels()
+    socket
+    |> put_flash(:info, "Reset counter!")
+    |> assign(:pixel_counter, counter)
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -51,17 +60,32 @@ defmodule TicketCounterWeb.RunnerLive.Index do
 
   @impl true
   def handle_event("add_pixel", _params, socket) do
-    pixels_left = Pixels.add_pixel(socket.assigns.current_runner)
-    {:noreply, assign(socket, :pixels_left, pixels_left)}
+    case Pixels.add_pixel(socket.assigns.current_runner) do
+      {:ok, counter} ->
+        {:noreply,
+         socket
+         |> assign(:pixel_counter, counter)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        IO.puts "here"
+        {:noreply, socket
+        |> assign(changeset: changeset)
+        |> put_flash(:error, "Sign in first ;)")}
+    end
   end
 
   @impl true
   def handle_info({:set_runner, runner}, socket) do
-    IO.puts "received runner"
     {:noreply, socket
       |> assign(:current_runner, runner)
       |> assign(:runner_collection, list_runner())
       |> put_flash(:info, "Runner made successfully")}
+  end
+
+  @impl true
+  def handle_info({:counter_changed, counter}, socket) do
+    {:noreply, socket
+      |> assign(:pixel_counter, counter)}
   end
 
   @impl true
@@ -82,6 +106,10 @@ defmodule TicketCounterWeb.RunnerLive.Index do
         _ -> true
       end)
     end )}
+  end
+
+  def inverse(color) do
+    CssColors.invert(CssColors.parse!(color))
   end
 
   defp list_runner do

@@ -18,4 +18,19 @@ defmodule TicketCounter.PixelsFixtures do
 
     runner
   end
+
+  @doc """
+  Generate a counter.
+  """
+  def counter_fixture(attrs \\ %{}) do
+    {:ok, counter} =
+      attrs
+      |> Enum.into(%{
+        color: "some color",
+        count: 42
+      })
+      |> TicketCounter.Pixels.create_counter()
+
+    counter
+  end
 end

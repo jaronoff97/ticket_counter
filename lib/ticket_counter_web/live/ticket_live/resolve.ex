@@ -10,17 +10,9 @@ defmodule TicketCounterWeb.TicketLive.Resolve do
   end
 
   @impl true
-  def handle_params(params, session, socket) do
+  def handle_params(_params, _session, socket) do
     {:noreply, socket
       |> assign(:ticket, Tickets.get_latest_ticket())}
-  end
-
-  @impl true
-  def handle_params(%{"id" => id}, _, socket) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:ticket, Tickets.get_ticket!(id))}
   end
 
   @impl true
@@ -35,9 +27,7 @@ defmodule TicketCounterWeb.TicketLive.Resolve do
       |> assign(:ticket, Tickets.get_latest_ticket())}
   end
 
-  defp page_title(:show), do: "Show Ticket"
-  defp page_title(:edit), do: "Edit Ticket"
-
+  @impl true
   def handle_event("resolve_ticket", _value, socket) do
     case Tickets.delete_ticket(socket.assigns.ticket) do
       {:ok, _params} ->

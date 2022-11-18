@@ -60,7 +60,7 @@ defmodule TicketCounter.Tickets do
     |> Ticket.changeset(attrs)
     |> Repo.insert()
     |> broadcast(:ticket_created)
-    |> TicketCounter.TidByt.update_tidbyt
+    |> TicketCounter.TidByt.update_tidbyt(:ticket)
   end
 
   @doc """
@@ -107,7 +107,7 @@ defmodule TicketCounter.Tickets do
   def delete_ticket(%Ticket{} = ticket) do
     Repo.delete(ticket)
     |> broadcast(:ticket_deleted)
-    |> TicketCounter.TidByt.update_tidbyt
+    |> TicketCounter.TidByt.update_tidbyt(:ticket)
   end
 
   @doc """

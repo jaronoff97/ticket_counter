@@ -26,12 +26,13 @@ defmodule TicketCounterWeb.Router do
 
   end
 
-  
+
   live_session :default, on_mount: TicketCounterWeb.RunnerLive.InitAssigns do
     scope "/", TicketCounterWeb do
       pipe_through :browser
       live "/runner", RunnerLive.Index, :index
       live "/runner/new", RunnerLive.Index, :new
+      live "/runner/reset", RunnerLive.Index, :reset
       live "/runner/:id/edit", RunnerLive.Index, :edit
     end
   end
@@ -42,6 +43,7 @@ defmodule TicketCounterWeb.Router do
 
     get "/tickets", TicketController, :index
     get "/current_ticket", TicketController, :latest
+    get "/pixels_left", CounterController, :pixels_left
   end
 
   # Enables LiveDashboard only for development
