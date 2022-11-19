@@ -1,4 +1,6 @@
+<%= if @pixel_counter != nil && @pixel_counter.color != nil do %>
 <h1 style={"background-color:#{@pixel_counter.color};color:#{inverse(@pixel_counter.color)}"}>Pixels left: <%= @pixel_total - @pixel_counter.count %></h1>
+<% end %>
 
 <%= if @current_runner != nil && @current_runner.name != nil do %>
 <h3><%= @current_runner.name %> is signed in</h3>
